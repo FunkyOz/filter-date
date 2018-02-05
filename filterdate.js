@@ -229,6 +229,9 @@
          * @return {string}
          */
         setFormatDate: function(date) {
+            if(typeof date == 'undefined') {
+                return '';
+            }
             var dd = date.getDate(),
                 mm = date.getMonth() + 1,
                 yyyy = date.getFullYear();
@@ -241,7 +244,7 @@
         var dataKey = 'filterDate';
         return this.each(function () {
             var selectElement = $(this),
-				instance = selectElement.data(dataKey);
+                instance = selectElement.data(dataKey);
             if (typeof options === 'string') {
                 if (instance && typeof instance[options] === 'function') {
                     instance[options](args);
