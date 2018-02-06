@@ -18,6 +18,20 @@
         7: 'Custom'
     };
 
+    var defaultRanges = {
+        0: 'No filter',
+        1: '15 days ago',
+        2: '30 days ago',
+        3: '45 days ago',
+        4: '60 days ago',
+        5: '75 days ago',
+        6: '90 days ago'
+    };
+
+    var pluginType = 'none';
+
+    var days = 0;
+
     /**
      * Main function of FilterDate.
      * 
@@ -30,6 +44,13 @@
         that.defaults = {
 
             values: defaultValues,
+
+            range: {
+                values: defaultRanges,
+                serie: 10
+            },
+
+            type: '',
 
             /**
              * Use to convert date to string ITA (dd-mm-yyyy).
@@ -98,20 +119,13 @@
             if(!that.defaults.emptyFilter && that.defaults.values.hasOwnProperty(0)) {
                 delete that.defaults.values[0];
             }
-            that.$select.empty();
-            var keyOptions = Object.keys(that.defaults.values);
-            var valueOptions = Object.values(that.defaults.values);
-            for(var i = 0; i < keyOptions.length; i++) {
-                var option = document.createElement('option');
-                option.value = keyOptions[i];
-                option.innerHTML = valueOptions[i];
-                that.$select.append(option);
-            }
+            that.setValuesByType(that.defaults.type);
+            that.setSelectValues(that.$select, that.defaults.values);
             that.$select.on('change', function(e) {
                 e.preventDefault();
                 var filter = Number($(this).val());
                 if(isNaN(filter)) {
-                    console.error("Select's values must be numbers", '--> ' + $(this).val());
+                    console.error('Select\'s values must be numbers', '--> ' + $(this).val());
                     return false;
                 }
                 that.defaults.onStartChangeEvent(filter);
@@ -120,19 +134,77 @@
             });
         },
 
+        setSelectValues: function(select, values) {
+            select.empty();
+            var keyOptions = Object.keys(values);
+            var valueOptions = Object.values(values);
+            for(var i = 0; i < keyOptions.length; i++) {
+                var option = document.createElement('option');
+                option.value = keyOptions[i];
+                option.innerHTML = valueOptions[i];
+                select.append(option);
+            }
+        },
+
+        setValuesByType: function(type) {
+            var that = this;
+            debugger;
+            switch(type) {
+                case 'range':
+                    that.pluginType = type;
+                    that.defaults.values = that.defaults.range.values;
+                break;
+            }
+        },
+
+        filter: function(filter) {
+            var that = this;
+            switch(that.pluginType) {
+                case 'range':
+                    that.filterByRangeOfDate(filter);
+                break;
+                default:
+                    that.defaultFilter(filter);
+                break;
+            }
+        },
+
+        filterByRangeOfDate: function(filter) {
+            var that = this;
+            var resDateFrom = new Date(),
+                resDateTo = new Date();
+
+            
+            if (filter == 0) {
+                resDateTo = resDateFrom;
+            } else {
+                var daysFrom = that.defaults.range.serie * (filter-1);
+                var daysTo = that.defaults.range.serie * filter;
+                resDateFrom = that.addDays(resDateFrom, -daysFrom);
+                resDateTo = that.addDays(resDateTo, -daysTo);
+            }
+            if(that.defaults.convertDateToString) {
+                resDateTo = that.setFormatDate(resDateTo);
+                resDateFrom = that.setFormatDate(resDateFrom);
+            }
+            console.log('Days from: ', resDateFrom);
+            console.log('Days to: ', resDateTo);
+            that.defaults.onEndChangeEvent(resDateTo, resDateFrom);
+        },
+
         /**
          * Filter value of select when its status change.
          * 
          * @param {number} filter
          */
-        filter: function(filter) {
+        defaultFilter: function(filter) {
             var that = this;
             var today = new Date();
             var resDateTo, resDateFrom;
             switch (filter){
                 // No filter
                 case 0:
-                    if(!that.defaults.emptyFilter) {
+                    if(that.defaults.emptyFilter) {
                         that.defaults.onSelectedNoFilter();
                         return false;
                     }
@@ -189,7 +261,7 @@
          * 
          * @return {Date}
          */
-        addDays: function(date, days) {
+        addDays: function(date, days) {
             var result = new Date(date);
             result.setDate(result.getDate() + days);
             return result;
@@ -228,16 +300,42 @@
          * 
          * @return {string}
          */
-        setFormatDate: function(date) {
+        setFormatDate: function(date, format) {
             if(typeof date == 'undefined') {
                 return '';
             }
-            var dd = date.getDate(),
-                mm = date.getMonth() + 1,
-                yyyy = date.getFullYear();
-            if(dd < 10) dd = '0' + dd;
-            if(mm < 10) mm = '0' + mm;
-            return dd + '-' + mm + '-' + yyyy;
+            var d = date.getDate(),
+                m = date.getMonth() + 1,
+                Y = date.getFullYear(),
+                H = date.getMinutes(),
+                i = date.getSeconds();
+            if(d < 10) d = '0' + d;
+            if(m < 10) m = '0' + m;
+            var dateString = '';
+            switch (format) {
+                case 'ISO':
+                    dateString = Y + '-' + m + '-' + d + ' ' + H + ':' + i;
+                break;
+                case 'short':
+                    dateString = d + '/' + m + '/' + Y;
+                break;
+                case 'it':
+                    dateString = d + '/' + m + '/' + Y;
+                break;
+                case 'en':
+                    dateString = m + '/' + d + '/' + Y;
+                break;
+                case 'full-it':
+                    dateString = d + '/' + m + '/' + Y + ' ' + H + ':' + i;
+                break;
+                case 'full-en':
+                    dateString = m + '/' + d + '/' + Y + ' ' + H + ':' + i;
+                break;
+                default:
+                    dateString = d + '-' + m + '-' + Y;
+                break;
+            }
+            return dateString;
         }
     };
     $.fn.filterDate = function (options, args) {

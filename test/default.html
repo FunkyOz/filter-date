@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Default</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="../filterdate.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></link>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="container-title">
+			<h1>Filter Default</h1>
+		</div>
+		<div class="row filter-row">
+			<div class="col-md-4">
+				<select name="Default"></select>
+			</div>
+			<div class="col-md-4">
+				<p class="date-start">Date to start: <span class="date"></span></p>
+			</div>
+			<div class="col-md-4">
+				<p class="date-end">Date to end: <span class="date"></span></p>
+			</div>
+		</div>
+		<div class="row filter-row">
+			<div class="col-md-4">
+				<p class="filter-custom"></p>
+			</div>
+			<div class="col-md-4">
+				<p class="no-filter"></p>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$("select[name='Default']").filterDate({
+			type: 'range',
+			range: {
+				serie: 15
+			},
+			onEndChangeEvent: function(dateTo, dateFrom) {
+				$(".date-start .date").html(dateFrom);
+				$(".date-end .date").html(dateTo);
+				$(".filter-custom").html("");
+			},
+			onSelectedCustomizeFilter : function(value) {
+				console.log(value);
+				$(".filter-custom").html("Custom filter with value: " + value);
+			},
+			onSelectedNoFilter: function() {
+				$(".no-filter").html("Select no filter");
+			},
+			onStartChangeEvent: function() {
+				$(".date-start .date").html("");
+				$(".date-end .date").html("");
+				$(".filter-custom").html("");
+				$(".no-filter").html("");
+			}
+		});
+	</script>
+</body>
+</html>
