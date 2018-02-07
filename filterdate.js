@@ -20,15 +20,13 @@
 
     var defaultRanges = {
         0: 'No filter',
-        1: '15 days ago',
-        2: '30 days ago',
-        3: '45 days ago',
-        4: '60 days ago',
-        5: '75 days ago',
-        6: '90 days ago'
+        1: '10 days ago',
+        2: '10 - 20 days ago',
+        3: '20 - 30 days ago',
+        4: '30 - 40 days ago',
+        5: '40 - 50 days ago',
+        6: '50 - 60 days ago'
     };
-
-    var pluginType = 'none';
 
     var days = 0;
 
@@ -45,12 +43,13 @@
 
             values: defaultValues,
 
-            range: {
-                values: defaultRanges,
-                serie: 10
-            },
+            rangeValues: defaultRanges,
 
-            type: '',
+            serie: 10,
+
+            type: 'none',
+
+            formatDateString: 'default',
 
             /**
              * Use to convert date to string ITA (dd-mm-yyyy).
@@ -106,6 +105,7 @@
         }
         that.init(options);
     }
+
     FilterDate.prototype = {
 
         /**
@@ -134,6 +134,12 @@
             });
         },
 
+        /**
+         * Create element in select element.
+         * 
+         * @param {object} select the element that is anchored to plugin.
+         * @param {object} values to set in select options.
+         */
         setSelectValues: function(select, values) {
             select.empty();
             var keyOptions = Object.keys(values);
@@ -148,18 +154,16 @@
 
         setValuesByType: function(type) {
             var that = this;
-            debugger;
             switch(type) {
                 case 'range':
-                    that.pluginType = type;
-                    that.defaults.values = that.defaults.range.values;
+                    that.defaults.values = that.defaults.rangeValues;
                 break;
             }
         },
 
         filter: function(filter) {
             var that = this;
-            switch(that.pluginType) {
+            switch(that.defaults.type) {
                 case 'range':
                     that.filterByRangeOfDate(filter);
                 break;
@@ -173,13 +177,11 @@
             var that = this;
             var resDateFrom = new Date(),
                 resDateTo = new Date();
-
-            
             if (filter == 0) {
-                resDateTo = resDateFrom;
+                that.isNoFilter();
             } else {
-                var daysFrom = that.defaults.range.serie * (filter-1);
-                var daysTo = that.defaults.range.serie * filter;
+                var daysFrom = that.defaults.serie * (filter-1);
+                var daysTo = that.defaults.serie * filter;
                 resDateFrom = that.addDays(resDateFrom, -daysFrom);
                 resDateTo = that.addDays(resDateTo, -daysTo);
             }
@@ -187,9 +189,15 @@
                 resDateTo = that.setFormatDate(resDateTo);
                 resDateFrom = that.setFormatDate(resDateFrom);
             }
-            console.log('Days from: ', resDateFrom);
-            console.log('Days to: ', resDateTo);
             that.defaults.onEndChangeEvent(resDateTo, resDateFrom);
+        },
+
+        isNoFilter: function() {
+            var that = this;
+            if(that.defaults.emptyFilter) {
+                that.defaults.onSelectedNoFilter();
+                return false;
+            }
         },
 
         /**
@@ -204,10 +212,7 @@
             switch (filter){
                 // No filter
                 case 0:
-                    if(that.defaults.emptyFilter) {
-                        that.defaults.onSelectedNoFilter();
-                        return false;
-                    }
+                    that.isNoFilter();
                     break;
                 // Today
                 case 1:
@@ -300,7 +305,8 @@
          * 
          * @return {string}
          */
-        setFormatDate: function(date, format) {
+        setFormatDate: function(date) {
+            var that = this;
             if(typeof date == 'undefined') {
                 return '';
             }
@@ -312,7 +318,7 @@
             if(d < 10) d = '0' + d;
             if(m < 10) m = '0' + m;
             var dateString = '';
-            switch (format) {
+            switch (that.defaults.formatDateString) {
                 case 'ISO':
                     dateString = Y + '-' + m + '-' + d + ' ' + H + ':' + i;
                 break;

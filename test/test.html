@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Default</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="../filterdate.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></link>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="default container-test">
+			<h1 class="text-center">Filter Default</h1>
+			<div class="row filter-row">
+				<div class="col-md-4">
+					<select name="Default" id="default"></select>
+				</div>
+				<div class="col-md-4">
+					<p class="date-start">Date to start: <span class="date"></span></p>
+				</div>
+				<div class="col-md-4">
+					<p class="date-end">Date to end: <span class="date"></span></p>
+				</div>
+			</div>
+			<div class="row filter-row">
+				<div class="col-md-6">
+					<p class="filter-custom"></p>
+				</div>
+				<div class="col-md-6">
+					<p class="no-filter"></p>
+				</div>
+			</div>
+		</div>
+		<div class="range container-test">
+			<h1 class="text-center">Filter By Date Ranges</h1>
+			<div class="row filter-row">
+				<div class="col-md-4">
+					<select name="Ranges" id="ranges"></select>
+				</div>
+				<div class="col-md-4">
+					<p class="date-start">Date to start: <span class="date"></span></p>
+				</div>
+				<div class="col-md-4">
+					<p class="date-end">Date to end: <span class="date"></span></p>
+				</div>
+			</div>
+			<div class="row filter-row">
+				<div class="col-md-6">
+					<p class="no-filter"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		
+		// Default
+		$("#default").filterDate({
+			formatDateString: 'it',
+			onEndChangeEvent: function(dateFrom, dateTo) {
+				$(".default .date-start .date").html(dateFrom);
+				$(".default .date-end .date").html(dateTo);
+				$(".default .filter-custom").html("");
+			},
+			onSelectedCustomizeFilter : function(value) {
+				$(".default .filter-custom").html("Custom filter with value: " + value);
+			},
+			onSelectedNoFilter: function() {
+				$(".default .no-filter").html("Select no filter");
+			},
+			onStartChangeEvent: function() {
+				$(".default .date-start .date").html("");
+				$(".default .date-end .date").html("");
+				$(".default .filter-custom").html("");
+				$(".default .no-filter").html("");
+			}
+		});
+
+		// Range 10 days.
+		$("#ranges").filterDate({
+			formatDateString: 'it',
+			type: 'range',
+			onEndChangeEvent: function(dateFrom, dateTo) {
+				$(".range .date-start .date").html(dateFrom);
+				$(".range .date-end .date").html(dateTo);
+			},
+			onSelectedNoFilter: function() {
+				$(".range .no-filter").html("Select no filter");
+			},
+			onStartChangeEvent: function() {
+				$(".range .date-start .date").html("");
+				$(".range .date-end .date").html("");
+				$(".range .no-filter").html("");
+			}
+		});
+	</script>
+</body>
+</html>

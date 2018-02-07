@@ -1,6 +1,8 @@
-.container-title {
-	text-align: center;
-	margin: 20px 0 50px 0;
+.container-test {
+	padding: 30px 0;
+}
+.container-test h1 {
+	margin-bottom: 50px;
 }
 select {
     width: 100%;
