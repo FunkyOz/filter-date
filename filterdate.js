@@ -1,6 +1,6 @@
 (function ($) {
 
-    'use strict';
+    "use strict";
 
     /**
      * Main function of FilterDate.
@@ -14,31 +14,48 @@
         that.defaults = {
 
             values: {
-                0: 'No filter',
-                1: 'Today',
-                2: 'Yesterday',
-                3: 'Last 7 days',
-                4: 'Last week',
-                5: 'Last 30 days',
-                6: 'Last month',
-                7: 'Custom'
+                0: "No filter",
+                1: "Today",
+                2: "Yesterday",
+                3: "Last 7 days",
+                4: "Last week",
+                5: "Last 30 days",
+                6: "Last month",
+                7: "Custom"
             },
 
             rangeValues: {
-                0: 'No filter',
-                1: '10 days ago',
-                2: '10 - 20 days ago',
-                3: '20 - 30 days ago',
-                4: '30 - 40 days ago',
-                5: '40 - 50 days ago',
-                6: '50 - 60 days ago'
+                0: "No filter",
+                1: "10 days ago",
+                2: "10 - 20 days ago",
+                3: "20 - 30 days ago",
+                4: "30 - 40 days ago",
+                5: "40 - 50 days ago",
+                6: "50 - 60 days ago"
             },
 
+            /**
+             * Series of days in range filter.
+             * 
+             * @type {int}
+             */
             serie: 10,
 
-            type: 'none',
+            /**
+             * Type of filter.
+             * Possible values = ["none", "range"].
+             * 
+             * @type {string}
+             */
+            type: "none",
 
-            formatDateString: 'default',
+            /**
+             * Type of format date string.
+             * Possible values = ["ISO", "short", "it", "full-it", "full-en", "en"].
+             * 
+             * @type {boolean}
+             */
+            formatDateString: "default",
 
             /**
              * Use to set the custom filter options.
@@ -48,7 +65,7 @@
             customFilter: false,
 
             /**
-             * Use to convert date to string ITA (dd-mm-yyyy).
+             * Use to convert date to string.
              * 
              * @type {boolean}
              */
@@ -109,11 +126,11 @@
             }
             that.setValuesByType(that.defaults.type);
             that.setSelectValues(that.$select, that.defaults.values);
-            that.$select.on('change', function(e) {
+            that.$select.on("change", function(e) {
                 e.preventDefault();
                 var filter = Number($(this).val());
                 if(isNaN(filter)) {
-                    console.error('Select\'s values must be numbers', '--> ' + $(this).val());
+                    console.error("Select's values must be numbers", "--> " + $(this).val());
                     return false;
                 }
                 that.defaults.onStartChangeEvent(filter);
@@ -133,26 +150,36 @@
             var keyOptions = Object.keys(values);
             var valueOptions = Object.values(values);
             for(var i = 0; i < keyOptions.length; i++) {
-                var option = document.createElement('option');
+                var option = document.createElement("option");
                 option.value = keyOptions[i];
                 option.innerHTML = valueOptions[i];
                 select.append(option);
             }
         },
 
+        /**
+         * Set the type of filter.
+         * 
+         * @param {string} type type of filter to use.
+         */
         setValuesByType: function(type) {
             var that = this;
             switch(type) {
-                case 'range':
+                case "range":
                     that.defaults.values = that.defaults.rangeValues;
                 break;
             }
         },
 
+        /**
+         * Select the filter.
+         * 
+         * @param {int} filter value of type selected.
+         */
         filter: function(filter) {
             var that = this;
             switch(that.defaults.type) {
-                case 'range':
+                case "range":
                     that.filterByRangeOfDate(filter);
                 break;
                 default:
@@ -161,12 +188,17 @@
             }
         },
 
+        /**
+         * Filter by range of date.
+         * 
+         * @param {int} filter value of type selected.
+         */
         filterByRangeOfDate: function(filter) {
             var that = this;
             var resDateFrom = new Date(),
                 resDateTo = new Date();
             if (filter == 0) {
-                that.isNoFilter();
+                that.setNoFilter();
             } else {
                 var daysFrom = that.defaults.serie * (filter-1);
                 var daysTo = that.defaults.serie * filter;
@@ -180,7 +212,10 @@
             that.defaults.onEndChangeEvent(resDateTo, resDateFrom);
         },
 
-        isNoFilter: function() {
+        /**
+         * Called when no filter is selected.
+         */
+        setNoFilter: function() {
             var that = this;
             if(that.defaults.emptyFilter) {
                 that.defaults.onSelectedNoFilter();
@@ -200,7 +235,7 @@
             switch (filter){
                 // No filter
                 case 0:
-                    that.isNoFilter();
+                    that.setNoFilter();
                     break;
                 // Today
                 case 1:
@@ -295,48 +330,49 @@
          */
         setFormatDate: function(date) {
             var that = this;
-            if(typeof date == 'undefined') {
-                return '';
+            if(typeof date == "undefined") {
+                return "";
             }
             var d = date.getDate(),
                 m = date.getMonth() + 1,
                 Y = date.getFullYear(),
                 H = date.getMinutes(),
                 i = date.getSeconds();
-            if(d < 10) d = '0' + d;
-            if(m < 10) m = '0' + m;
-            var dateString = '';
+            if(d < 10) d = "0" + d;
+            if(m < 10) m = "0" + m;
+            var dateString = "";
             switch (that.defaults.formatDateString) {
-                case 'ISO':
-                    dateString = Y + '-' + m + '-' + d + ' ' + H + ':' + i;
+                case "ISO":
+                    dateString = Y + "-" + m + "-" + d + " " + H + ":" + i;
                 break;
-                case 'short':
-                    dateString = d + '/' + m + '/' + Y;
+                case "short":
+                    dateString = d + "/" + m + "/" + Y;
                 break;
-                case 'it':
-                    dateString = d + '/' + m + '/' + Y;
+                case "it":
+                    dateString = d + "/" + m + "/" + Y;
                 break;
-                case 'full-it':
-                    dateString = d + '/' + m + '/' + Y + ' ' + H + ':' + i;
+                case "full-it":
+                    dateString = d + "/" + m + "/" + Y + " " + H + ":" + i;
                 break;
-                case 'full-en':
-                    dateString = m + '/' + d + '/' + Y + ' ' + H + ':' + i;
+                case "full-en":
+                    dateString = m + "/" + d + "/" + Y + " " + H + ":" + i;
                 break;
-                case 'en':
+                case "en":
                 default:
-                    dateString = m + '/' + d + '/' + Y;
+                    dateString = m + "/" + d + "/" + Y;
                 break;
             }
             return dateString;
         }
     };
+    
     $.fn.filterDate = function (options, args) {
-        var dataKey = 'filterDate';
+        var dataKey = "filterDate";
         return this.each(function () {
             var selectElement = $(this),
                 instance = selectElement.data(dataKey);
-            if (typeof options === 'string') {
-                if (instance && typeof instance[options] === 'function') {
+            if (typeof options === "string") {
+                if (instance && typeof instance[options] === "function") {
                     instance[options](args);
                 }
             } else {
