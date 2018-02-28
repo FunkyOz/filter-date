@@ -10,6 +10,20 @@
 </head>
 <body>
 	<div class="container">
+		<div class="no-options container-test">
+			<h1 class="text-center">Filter Without Options</h1>
+			<div class="row filter-row">
+				<div class="col-md-4">
+					<select name="NoOptions" id="no-options"></select>
+				</div>
+				<div class="col-md-4">
+					<p class="date-start">Date to start: <span class="date"></span></p>
+				</div>
+				<div class="col-md-4">
+					<p class="date-end">Date to end: <span class="date"></span></p>
+				</div>
+			</div>
+		</div>
 		<div class="default container-test">
 			<h1 class="text-center">Filter Default</h1>
 			<div class="row filter-row">
@@ -54,9 +68,19 @@
 	</div>
 	<script type="text/javascript">
 		
+		// Without options
+		$("#no-options").filterDate({
+			onEndChangeEvent: function(dateFrom, dateTo) {
+				$(".no-options .date-start .date").html(dateFrom);
+				$(".no-options .date-end .date").html(dateTo);
+				$(".no-options .filter-custom").html("");
+			}
+		});
+
 		// Default
 		$("#default").filterDate({
 			formatDateString: 'it',
+			customFilter: true,
 			onEndChangeEvent: function(dateFrom, dateTo) {
 				$(".default .date-start .date").html(dateFrom);
 				$(".default .date-end .date").html(dateTo);

@@ -3,34 +3,6 @@
     'use strict';
 
     /**
-     * The default object that define value and label of select.
-     * 
-     * @type {object}
-     */
-    var defaultValues = {
-        0: 'No filter',
-        1: 'Today',
-        2: 'Yesterday',
-        3: 'Last 7 days',
-        4: 'Last week',
-        5: 'Last 30 days',
-        6: 'Last month',
-        7: 'Custom'
-    };
-
-    var defaultRanges = {
-        0: 'No filter',
-        1: '10 days ago',
-        2: '10 - 20 days ago',
-        3: '20 - 30 days ago',
-        4: '30 - 40 days ago',
-        5: '40 - 50 days ago',
-        6: '50 - 60 days ago'
-    };
-
-    var days = 0;
-
-    /**
      * Main function of FilterDate.
      * 
      * @param {object} select the element that is anchored to plugin.
@@ -41,15 +13,39 @@
         that.$select = $(select);
         that.defaults = {
 
-            values: defaultValues,
+            values: {
+                0: 'No filter',
+                1: 'Today',
+                2: 'Yesterday',
+                3: 'Last 7 days',
+                4: 'Last week',
+                5: 'Last 30 days',
+                6: 'Last month',
+                7: 'Custom'
+            },
 
-            rangeValues: defaultRanges,
+            rangeValues: {
+                0: 'No filter',
+                1: '10 days ago',
+                2: '10 - 20 days ago',
+                3: '20 - 30 days ago',
+                4: '30 - 40 days ago',
+                5: '40 - 50 days ago',
+                6: '50 - 60 days ago'
+            },
 
             serie: 10,
 
             type: 'none',
 
             formatDateString: 'default',
+
+            /**
+             * Use to set the custom filter options.
+             * 
+             * @type {boolean}
+             */
+            customFilter: false,
 
             /**
              * Use to convert date to string ITA (dd-mm-yyyy).
@@ -70,20 +66,14 @@
              * 
              * @param {number} value the value of select.
              */
-            onSelectedCustomizeFilter: function(value) {
-                console.log('noFilterCallback');
-                return false;
-            },
+            onSelectedCustomizeFilter: function(value) {},
 
             /**
              * Called at the beginning of select's on change.
              * 
              * @param {number} value the value of select.
              */
-            onStartChangeEvent: function(value) {
-                console.log('onStartChangeEvent');
-                return false;
-            },
+            onStartChangeEvent: function(value) {},
 
             /**
              * Called when select's on change is finish.
@@ -91,17 +81,12 @@
              * @param {Date|string} dateTo the value of select.
              * @param {Date|string} dateFrom the value of select.
              */
-            onEndChangeEvent: function(dateTo, dateFrom) {
-                console.log('onEndChangeEvent');
-                return false;
-            },
+            onEndChangeEvent: function(dateTo, dateFrom) {},
 
             /**
              * Called when No filter is selected.
              */
-            onSelectedNoFilter: function() {
-                return false;
-            }
+            onSelectedNoFilter: function() {}
         }
         that.init(options);
     }
@@ -118,6 +103,9 @@
             that.defaults = $.extend({}, that.defaults, options);
             if(!that.defaults.emptyFilter && that.defaults.values.hasOwnProperty(0)) {
                 delete that.defaults.values[0];
+            }
+            if(that.defaults.customFilter === false) {
+                delete that.defaults.values[7];
             }
             that.setValuesByType(that.defaults.type);
             that.setSelectValues(that.$select, that.defaults.values);
@@ -328,17 +316,15 @@
                 case 'it':
                     dateString = d + '/' + m + '/' + Y;
                 break;
-                case 'en':
-                    dateString = m + '/' + d + '/' + Y;
-                break;
                 case 'full-it':
                     dateString = d + '/' + m + '/' + Y + ' ' + H + ':' + i;
                 break;
                 case 'full-en':
                     dateString = m + '/' + d + '/' + Y + ' ' + H + ':' + i;
                 break;
+                case 'en':
                 default:
-                    dateString = d + '-' + m + '-' + Y;
+                    dateString = m + '/' + d + '/' + Y;
                 break;
             }
             return dateString;
