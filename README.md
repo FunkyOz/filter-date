@@ -52,14 +52,12 @@ $("#filter-date").filterDate(options);
 ### Use the range date filter.
 You can use the range date filter and change the serie of value.
 ```javascript
-**Attention:** for now you MUST use this format of value.
-
 var options: {
 	type: "range",
 	serie: 10,
 	formatDateString: formatDateString,
 	onEndChangeEvent: function(dateFrom, dateTo) {
-		console.log("With this callback you can catch the dates values");
+		console.log("With this callback you can catch dates values");
 	}
 }
 
